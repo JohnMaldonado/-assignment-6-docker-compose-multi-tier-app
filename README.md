@@ -1,12 +1,14 @@
-﻿# 🐳 Assignment 6: Docker Compose Multi-Tier Application
+# 🐳 Assignment 6: Docker Compose Multi-Tier Application
 
-[![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
-[![Docker Compose](https://img.shields.io/badge/Docker_Compose-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://docs.docker.com/compose/)
-[![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
-[![Flask](https://img.shields.io/badge/Flask-000000?style=for-the-badge&logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
-[![Redis](https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white)](https://redis.io/)
-[![Nginx](https://img.shields.io/badge/Nginx-009639?style=for-the-badge&logo=nginx&logoColor=white)](https://www.nginx.com/)
+<br/>
+
+<div align="center">
+  <img src="assets/banner.png" alt="Docker Compose Multi-Tier App" width="1200"/>
+</div>
+
+<br/>
+
+
 
 **A production-ready multi-tier application demonstrating container orchestration, microservices architecture, and DevOps best practices.**
 
@@ -474,3 +476,4 @@ This project is part of a DevOps learning assignment and is available for educat
 ---
 
 **Built with ❤️ using Docker Compose**
+
