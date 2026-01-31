@@ -458,8 +458,8 @@ This project is part of a DevOps learning assignment and is available for educat
 
 **Jonathan Vega**
 - Role: Principal DevOps Engineer 
-- GitHub: [@yourusername](https://github.com/JohnMaldonado)
-- LinkedIn: [Your Profile](https://linkedin.com/)
+- GitHub: [@JohnMaldonado](https://github.com/JohnMaldonado)
+- LinkedIn: [John](https://linkedin.com/)
 
 ---
 
