@@ -456,10 +456,10 @@ This project is part of a DevOps learning assignment and is available for educat
 
 ## 👤 Author
 
-**John Maldonado**
-- Role: Principal DevOps Engineer @ Baker Hughes
-- GitHub: [@yourusername](https://github.com/yourusername)
-- LinkedIn: [Your Profile](https://linkedin.com/in/yourprofile)
+**Jonathan Vega**
+- Role: Principal DevOps Engineer 
+- GitHub: [@yourusername](https://github.com/JohnMaldonado)
+- LinkedIn: [Your Profile](https://linkedin.com/)
 
 ---
 
