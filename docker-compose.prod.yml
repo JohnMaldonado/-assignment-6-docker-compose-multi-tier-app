@@ -1,0 +1,89 @@
+﻿# docker-compose.prod.yml
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+# This file OVERRIDES settings in docker-compose.yml for production
+
+version: '3.8'
+
+services:
+  jhon-backend:
+    environment:
+      # Production mode - no debug
+      FLASK_ENV: production
+    # No bind mounts in production - use built image only
+    # No ports exposed - only accessible via nginx
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '1.5'
+          memory: 768M
+        reservations:
+          cpus: '1.0'
+          memory: 512M
+      replicas: 1
+
+  jhon-frontend:
+    environment:
+      # API accessed through nginx reverse proxy
+      REACT_APP_API_URL: /api
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+
+  jhon-postgres:
+    # No ports exposed to host in production
+    # Only accessible within backend network
+    restart: always
+    command: postgres -c shared_buffers=256MB -c max_connections=200
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 1G
+        reservations:
+          cpus: '1.0'
+          memory: 512M
+
+  jhon-redis:
+    # No ports exposed in production
+    restart: always
+    command: >
+      redis-server
+      --appendonly yes
+      --requirepass ${REDIS_PASSWORD}
+      --maxmemory 256mb
+      --maxmemory-policy allkeys-lru
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+
+  jhon-nginx:
+    ports:
+      # Standard HTTP port
+      - "80:80"
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+        compress: "true"

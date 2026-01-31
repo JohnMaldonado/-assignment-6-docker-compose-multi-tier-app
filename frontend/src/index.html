@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JHON - Docker Compose Assignment</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+            padding: 20px;
+        }
+        .container { max-width: 800px; margin: 0 auto; }
+        h1 { font-size: 2.5em; margin-bottom: 30px; text-align: center; }
+        .health-status, .task-form, .tasks-section {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover { background: #45a049; }
+        input {
+            padding: 10px;
+            width: 60%;
+            margin-right: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .task-list { list-style: none; margin-top: 20px; }
+        .task-list li {
+            background: rgba(255,255,255,0.2);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .completed { opacity: 0.6; text-decoration: line-through; }
+        .badge {
+            background: #4CAF50;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+        }
+        .error { color: #ff6b6b; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🐳 JHON - Docker Compose Assignment</h1>
+        
+        <div class="health-status" id="health">
+            <h3>System Health</h3>
+            <p id="health-info">Loading...</p>
+        </div>
+
+        <div class="controls">
+            <button onclick="initDatabase()">Initialize Database</button>
+            <button onclick="fetchTasks()">Refresh Tasks</button>
+        </div>
+
+        <div class="task-form">
+            <h2>Add New Task</h2>
+            <input type="text" id="taskInput" placeholder="Enter task title..." onkeypress="if(event.key==='Enter') addTask()">
+            <button onclick="addTask()">Add Task</button>
+        </div>
+
+        <div class="tasks-section">
+            <h2 id="tasks-header">Tasks</h2>
+            <ul class="task-list" id="taskList">
+                <li>Loading...</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        async function fetchHealth() {
+            try {
+                const response = await fetch('/health');
+                const data = await response.json();
+                document.getElementById('health-info').innerHTML = 
+                    'Status: ' + data.status + '<br>' +
+                    'Database: ' + data.database + '<br>' +
+                    'Redis: ' + data.redis + '<br>' +
+                    'Time: ' + new Date(data.timestamp).toLocaleString();
+            } catch (error) {
+                console.error('Health check error:', error);
+                document.getElementById('health-info').innerHTML = '<span class="error">Health check failed</span>';
+            }
+        }
+
+        async function fetchTasks() {
+            try {
+                const response = await fetch('/api/tasks');
+                if (!response.ok) {
+                    throw new Error('HTTP error! status: ' + response.status);
+                }
+                const data = await response.json();
+                const taskList = document.getElementById('taskList');
+                const header = document.getElementById('tasks-header');
+                
+                header.textContent = 'Tasks (from ' + data.source + ')';
+                
+                if (data.tasks.length === 0) {
+                    taskList.innerHTML = '<li>No tasks yet. Click "Initialize Database" to load sample tasks.</li>';
+                } else {
+                    taskList.innerHTML = data.tasks.map(function(task) {
+                        return '<li class="' + (task.completed ? 'completed' : '') + '">' +
+                            '<span>' + task.title + '</span>' +
+                            (task.completed ? '<span class="badge">✓</span>' : '') +
+                            '</li>';
+                    }).join('');
+                }
+            } catch (error) {
+                console.error('Fetch tasks error:', error);
+                document.getElementById('taskList').innerHTML = '<li class="error">Error loading tasks. Check console for details.</li>';
+            }
+        }
+
+        async function initDatabase() {
+            try {
+                const response = await fetch('/api/init-db', { method: 'POST' });
+                if (!response.ok) {
+                    throw new Error('HTTP error! status: ' + response.status);
+                }
+                const data = await response.json();
+                alert('Database initialized successfully!');
+                fetchTasks();
+            } catch (error) {
+                console.error('Init DB error:', error);
+                alert('Error initializing database. Check console for details.');
+            }
+        }
+
+        async function addTask() {
+            const input = document.getElementById('taskInput');
+            const title = input.value.trim();
+            
+            if (!title) {
+                alert('Please enter a task title');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/tasks', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title: title })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('HTTP error! status: ' + response.status);
+                }
+                
+                input.value = '';
+                fetchTasks();
+            } catch (error) {
+                console.error('Add task error:', error);
+                alert('Error adding task. Check console for details.');
+            }
+        }
+
+        console.log('Initializing application...');
+        fetchHealth();
+        fetchTasks();
+        setInterval(fetchHealth, 30000);
+    </script>
+</body>
+</html>

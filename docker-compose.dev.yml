@@ -1,0 +1,60 @@
+﻿# docker-compose.dev.yml
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+# This file OVERRIDES settings in docker-compose.yml for development
+
+version: '3.8'
+
+services:
+  jhon-backend:
+    environment:
+      # Enable Flask debug mode for development
+      FLASK_ENV: development
+    volumes:
+      # Bind mount for live code reloading
+      # Changes in ./backend/src reflect immediately in container
+      - ./backend/src:/app:ro
+    ports:
+      # Expose backend directly for debugging
+      - "5000:5000"
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 1G
+
+  jhon-frontend:
+    environment:
+      # Point to local backend for development
+      REACT_APP_API_URL: http://localhost:5000
+    volumes:
+      # Bind mount for hot module reloading
+      - ./frontend/src:/app/src:ro
+      - ./frontend/public:/app/public:ro
+    ports:
+      # Expose frontend directly
+      - "3000:3000"
+
+  jhon-postgres:
+    ports:
+      # Expose PostgreSQL for local DB tools (pgAdmin, DBeaver, etc.)
+      - "5432:5432"
+    environment:
+      # More verbose logging in development
+      POSTGRES_INITDB_ARGS: "-E UTF8 --locale=en_US.utf8"
+
+  jhon-redis:
+    ports:
+      # Expose Redis for debugging with redis-cli
+      - "6379:6379"
+    command: redis-server --appendonly yes
+      # No password in dev for easier testing
+
+  jhon-nginx:
+    ports:
+      # Use different port to avoid conflicts
+      - "8080:80"
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "5"
